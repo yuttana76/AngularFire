@@ -1,10 +1,10 @@
-import { AngularFirePage } from './app.po';
+import { FinalProjectPage } from './app.po';
 
-describe('angular-fire App', function() {
-  let page: AngularFirePage;
+describe('final-project App', function() {
+  let page: FinalProjectPage;
 
   beforeEach(() => {
-    page = new AngularFirePage();
+    page = new FinalProjectPage();
   });
 
   it('should display message saying app works', () => {
