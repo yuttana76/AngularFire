@@ -1,5 +1,8 @@
+// import { FirebaseObjectObservable } from 'angularfire2/database';
+import { environment } from './../environments/environment';
 import { Component } from '@angular/core';
-import { initializeApp, database } from 'firebase';
+import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'app-root',
@@ -9,20 +12,50 @@ import { initializeApp, database } from 'firebase';
 export class AppComponent {
   title = 'app works!';
 
-  constructor() {
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyCPGHzbrFlp0YxvGa99XnkTZcezD7IdupU",
-      authDomain: "jackle-apps.firebaseapp.com",
-      databaseURL: "https://jackle-apps.firebaseio.com",
-      storageBucket: "jackle-apps.appspot.com",
-      messagingSenderId: "410170652820"
-    };
-    initializeApp(config);
+  courses$: FirebaseListObservable<any>;
+  lesson$: FirebaseObjectObservable<any>;
+  firstCourse: any;
 
-    var root = database().ref('messages/2');
-    root.on('value', function (snap) {
-      console.log(snap.key, snap.val());
-    });
+  constructor(private af: AngularFire) {
+    this.courses$ = af.database.list('courses');
+    this.courses$.subscribe(console.log);
+
+    this.lesson$ = af.database.object('lessons/-KcIsyH6ttuDcHETUcRu');
+    this.lesson$.subscribe(console.log);
+
+    this.courses$.map(courses => courses[0])
+      .subscribe(
+      course => this.firstCourse = course
+      );
+
+  }
+
+  listPush() {
+    this.courses$.push({ description: 'TEST NEW COURSE' })
+      .then(
+      () => console.log('List Push Done'),
+      console.error
+      );
+  }
+
+  listRemove() {
+    this.courses$.remove(this.firstCourse);
+  }
+
+  listUpdate() {
+    console.log('Welcome update.');
+    this.courses$.update(this.firstCourse, { description: 'Modified' });
+  }
+
+  objUpdate() {
+    this.lesson$.update({ description: 'Modified' });
+  }
+
+  objSet() {
+    this.lesson$.set({ description: 'Modified' });
+  }
+
+  objRemove() {
+  this.lesson$.remove();
   }
 }
